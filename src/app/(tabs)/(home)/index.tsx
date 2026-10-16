@@ -1,25 +1,39 @@
 import { router } from "expo-router";
-import { Pressable, ScrollView, Text } from "react-native";
+import { useMemo } from "react";
+import { FlatList, useWindowDimensions, View } from "react-native";
 
-import { EmptyState } from "@/components/EmptyState";
+import { HomeHeader } from "@/components/feed/HomeHeader";
+import { PostCard } from "@/components/feed/PostCard";
+import { StoriesRow } from "@/components/feed/StoriesRow";
+import { currentUser, getMockFeed, storyUsers } from "@/mocks/feed";
 
-// Feed lands in Phase 7 (follows + fan-out + demo fallback).
+// UI on mock data; swaps to the paginated Convex feed (usePaginatedQuery) in Phase 7.
 export default function HomeScreen() {
+  const { width } = useWindowDimensions();
+  const posts = useMemo(() => getMockFeed(), []);
+
   return (
-    <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerClassName="grow">
-      <EmptyState
-        icon="photo.on.rectangle.angled"
-        title="Your feed is empty"
-        message="Follow people from Explore to see their photos and videos here."
-      >
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => router.navigate("/explore")}
-          className="mt-3 h-11 items-center justify-center rounded-full bg-primary px-6 active:opacity-80"
-        >
-          <Text className="font-inter-medium text-[14px] text-white">Explore</Text>
-        </Pressable>
-      </EmptyState>
-    </ScrollView>
+    <View className="flex-1 bg-white">
+      <HomeHeader
+        actions={[
+          { icon: "plusSquare", label: "New post", onPress: () => router.push("/create") },
+          { icon: "heart", label: "Likes", onPress: () => router.push("/activity") },
+          { icon: "bell", label: "Notifications", onPress: () => router.push("/activity"), dot: true },
+        ]}
+      />
+      <FlatList
+        data={posts}
+        keyExtractor={(p) => p.id}
+        contentInsetAdjustmentBehavior="automatic"
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <View className="border-b border-divider pb-[10.3px] pt-[13px]">
+            <StoriesRow me={currentUser} users={storyUsers} />
+          </View>
+        }
+        ItemSeparatorComponent={() => <View className="h-px bg-divider" />}
+        renderItem={({ item }) => <PostCard post={item} width={width} />}
+      />
+    </View>
   );
 }

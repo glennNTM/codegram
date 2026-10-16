@@ -13,6 +13,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
+import { Platform } from "react-native";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "";
 
@@ -43,8 +44,14 @@ export default function RootLayout() {
   );
 }
 
+// Dev-only, web-only: lets a local web preview render signed-in screens for visual checks
+// (start the dev server with EXPO_PUBLIC_UI_PREVIEW=1). Always false in production builds.
+const UI_PREVIEW = __DEV__ && Platform.OS === "web" && process.env.EXPO_PUBLIC_UI_PREVIEW === "1";
+
 function RootNavigator() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const auth = useAuth();
+  const isLoaded = auth.isLoaded;
+  const isSignedIn = auth.isSignedIn || UI_PREVIEW;
 
   useEffect(() => {
     if (isLoaded) SplashScreen.hideAsync();
