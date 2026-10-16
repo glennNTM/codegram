@@ -1,10 +1,14 @@
 import { NativeTabs } from "expo-router/unstable-native-tabs";
 
+import { useUnreadConversationCount } from "@/mocks/messages";
+
 // Tab bar colors from the design reference: primary blue when selected, ink otherwise.
 const PRIMARY = "#1F74FD";
 const INK = "#0B1128";
 
 export default function TabsLayout() {
+  const unreadChats = useUnreadConversationCount();
+
   return (
     <NativeTabs
       tintColor={PRIMARY}
@@ -23,6 +27,7 @@ export default function TabsLayout() {
       <NativeTabs.Trigger name="messages">
         <NativeTabs.Trigger.Icon sf={{ default: "bubble.left", selected: "bubble.left.fill" }} md="chat_bubble" />
         <NativeTabs.Trigger.Label>Messages</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Badge hidden={unreadChats === 0}>{String(unreadChats)}</NativeTabs.Trigger.Badge>
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="explore">

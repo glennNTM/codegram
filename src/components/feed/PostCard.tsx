@@ -20,9 +20,19 @@ type Props = {
   onPressComments?: () => void;
   onPressMore?: () => void;
   onPressShare?: () => void;
+  /** "View all N comments" + preview lines; off on Post details, which lists comments itself. */
+  showCommentPreview?: boolean;
 };
 
-export function PostCard({ post, width, onPressAuthor, onPressComments, onPressMore, onPressShare }: Props) {
+export function PostCard({
+  post,
+  width,
+  onPressAuthor,
+  onPressComments,
+  onPressMore,
+  onPressShare,
+  showCommentPreview = true,
+}: Props) {
   // Local optimistic state; becomes Convex mutations (likes.toggle) in Phase 8.
   const [liked, setLiked] = useState(post.viewerHasLiked);
   const [likeCount, setLikeCount] = useState(post.likeCount);
@@ -127,13 +137,13 @@ export function PostCard({ post, width, onPressAuthor, onPressComments, onPressM
           {post.caption}
         </Text>
 
-        {post.commentCount > 0 ? (
+        {showCommentPreview && post.commentCount > 0 ? (
           <Text onPress={onPressComments} className="mt-1 font-inter text-[11px] leading-[16px] text-subtle">
             View all {post.commentCount} comments
           </Text>
         ) : null}
 
-        {post.previewComments.length > 0 ? (
+        {showCommentPreview && post.previewComments.length > 0 ? (
           <View className="mt-[6.5px] gap-[2.2px]">
             {post.previewComments.map((c) => (
               <Text key={c.id} numberOfLines={1} className="font-inter text-[11px] leading-[17px] text-ink">

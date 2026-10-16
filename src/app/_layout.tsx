@@ -15,6 +15,8 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { Platform } from "react-native";
 
+import { useOnboarded } from "@/mocks/session";
+
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "";
 
 if (!publishableKey) {
@@ -52,19 +54,31 @@ function RootNavigator() {
   const auth = useAuth();
   const isLoaded = auth.isLoaded;
   const isSignedIn = auth.isSignedIn || UI_PREVIEW;
+  // Mock flag until the Convex `users.onboarded` field (Phase 3).
+  const onboarded = useOnboarded();
 
   useEffect(() => {
     if (isLoaded) SplashScreen.hideAsync();
   }, [isLoaded]);
 
   // Keep the splash screen up until Clerk has restored (or ruled out) a session.
-  if (!isLoaded) return null;
+  if (!isLoaded && !UI_PREVIEW) return null;
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={!!isSignedIn}>
+      <Stack.Protected guard={!!isSignedIn && !onboarded}>
+        <Stack.Screen name="onboarding" />
+      </Stack.Protected>
+      <Stack.Protected guard={!!isSignedIn && onboarded}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="create" options={{ presentation: "modal" }} />
+        <Stack.Screen name="user/[username]" />
+        <Stack.Screen name="chat/[conversationId]" />
+        <Stack.Screen name="post/[postId]" />
+        <Stack.Screen
+          name="new-message"
+          options={{ presentation: "formSheet", sheetAllowedDetents: [0.6, 1], sheetGrabberVisible: true }}
+        />
       </Stack.Protected>
       <Stack.Protected guard={!isSignedIn}>
         <Stack.Screen name="sign-in" />

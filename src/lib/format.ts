@@ -34,3 +34,26 @@ export function formatAgeLong(timestamp: number, now = Date.now()): string {
   if (diff < WEEK) return plural(Math.floor(diff / DAY), "day");
   return plural(Math.floor(diff / WEEK), "week");
 }
+
+/** Video length: 42_000 → "0:42", 65_000 → "1:05". */
+export function formatDuration(ms: number): string {
+  const total = Math.round(ms / 1_000);
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
+}
+
+/** Bubble timestamp: "09:32". */
+export function formatClock(timestamp: number): string {
+  const d = new Date(timestamp);
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
+/** Chat day separator: "Today", "Yesterday", "Monday", then "12 Oct". */
+export function formatDayLabel(timestamp: number, now = Date.now()): string {
+  const startOfDay = (t: number) => new Date(t).setHours(0, 0, 0, 0);
+  const days = Math.round((startOfDay(now) - startOfDay(timestamp)) / DAY);
+  if (days <= 0) return "Today";
+  if (days === 1) return "Yesterday";
+  const d = new Date(timestamp);
+  if (days < 7) return d.toLocaleDateString("en-US", { weekday: "long" });
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+}

@@ -38,7 +38,7 @@ export type FeedPost = {
 
 const HOUR = 3_600_000;
 
-const users = {
+export const mockUsers = {
   me: { id: "u_me", username: "you", avatar: require("@/assets/mock/avatar-me.jpg") },
   alex: { id: "u_alex", username: "alex.m", avatar: require("@/assets/mock/avatar-alex.jpg"), verified: true, hasStory: true },
   lina: { id: "u_lina", username: "lina.rs", avatar: require("@/assets/mock/avatar-lina.jpg"), hasStory: true },
@@ -47,9 +47,9 @@ const users = {
   thomas: { id: "u_thomas", username: "thomas", avatar: require("@/assets/mock/avatar-thomas.jpg"), hasStory: true },
 } satisfies Record<string, FeedUser>;
 
-export const currentUser: FeedUser = users.me;
+export const currentUser: FeedUser = mockUsers.me;
 
-export const storyUsers: FeedUser[] = [users.alex, users.lina, users.marc, users.sarah, users.thomas];
+export const storyUsers: FeedUser[] = [mockUsers.alex, mockUsers.lina, mockUsers.marc, mockUsers.sarah, mockUsers.thomas];
 
 const nice = require("@/assets/mock/post-nice.jpg");
 const coast = require("@/assets/images/auth/collage-coast.jpg");
@@ -60,7 +60,7 @@ export function getMockFeed(now = Date.now()): FeedPost[] {
     {
       id: "p_1",
       // The reference shows alex.m's post with the "me" photo as avatar.
-      author: { ...users.alex, avatar: users.me.avatar, hasStory: false },
+      author: { ...mockUsers.alex, avatar: mockUsers.me.avatar, hasStory: false },
       location: "Nice, France",
       createdAt: now - 2 * HOUR,
       media: [nice, coast, traveler, nice, coast, traveler].map((source, i) => ({ id: `m_1_${i}`, source })),
@@ -76,7 +76,7 @@ export function getMockFeed(now = Date.now()): FeedPost[] {
     },
     {
       id: "p_2",
-      author: users.sarah,
+      author: mockUsers.sarah,
       location: "Biarritz, France",
       createdAt: now - 5 * HOUR,
       media: [{ id: "m_2_0", source: traveler }],
@@ -89,7 +89,7 @@ export function getMockFeed(now = Date.now()): FeedPost[] {
     },
     {
       id: "p_3",
-      author: users.lina,
+      author: mockUsers.lina,
       location: "Amalfi, Italy",
       createdAt: now - 26 * HOUR,
       media: [{ id: "m_3_0", source: coast }],

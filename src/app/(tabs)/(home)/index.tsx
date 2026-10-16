@@ -1,16 +1,21 @@
 import { router } from "expo-router";
-import { useMemo } from "react";
-import { FlatList, useWindowDimensions, View } from "react-native";
+import { FlatList, Share, useWindowDimensions, View } from "react-native";
 
 import { HomeHeader } from "@/components/feed/HomeHeader";
 import { PostCard } from "@/components/feed/PostCard";
 import { StoriesRow } from "@/components/feed/StoriesRow";
-import { currentUser, getMockFeed, storyUsers } from "@/mocks/feed";
+import { openPostMenu } from "@/lib/menus";
+import { useHasUnreadActivity } from "@/mocks/activity";
+import { currentUser, storyUsers } from "@/mocks/feed";
+import { useFeedPosts } from "@/mocks/posts";
+import { useMyProfile } from "@/mocks/profile";
 
 // UI on mock data; swaps to the paginated Convex feed (usePaginatedQuery) in Phase 7.
 export default function HomeScreen() {
   const { width } = useWindowDimensions();
-  const posts = useMemo(() => getMockFeed(), []);
+  const posts = useFeedPosts();
+  const me = useMyProfile();
+  const hasUnreadActivity = useHasUnreadActivity();
 
   return (
     <View className="flex-1 bg-white">
@@ -18,7 +23,7 @@ export default function HomeScreen() {
         actions={[
           { icon: "plusSquare", label: "New post", onPress: () => router.push("/create") },
           { icon: "heart", label: "Likes", onPress: () => router.push("/activity") },
-          { icon: "bell", label: "Notifications", onPress: () => router.push("/activity"), dot: true },
+          { icon: "bell", label: "Notifications", onPress: () => router.push("/activity"), dot: hasUnreadActivity },
         ]}
       />
       <FlatList
@@ -32,7 +37,16 @@ export default function HomeScreen() {
           </View>
         }
         ItemSeparatorComponent={() => <View className="h-px bg-divider" />}
-        renderItem={({ item }) => <PostCard post={item} width={width} />}
+        renderItem={({ item }) => (
+          <PostCard
+            post={item}
+            width={width}
+            onPressAuthor={() => router.push({ pathname: "/user/[username]", params: { username: item.author.username } })}
+            onPressComments={() => router.push({ pathname: "/post/[postId]", params: { postId: item.id } })}
+            onPressMore={() => openPostMenu(item, item.author.username === me.username)}
+            onPressShare={() => Share.share({ message: `Check out this post by @${item.author.username} on Codegram` })}
+          />
+        )}
       />
     </View>
   );

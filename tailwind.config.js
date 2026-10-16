@@ -15,6 +15,11 @@ module.exports = {
         divider: "#EBEFF7",
         background: "#FBFCFE",
         danger: "#FF3B30",
+        // Sampled from design/explorescreen-ref.png and updateprofilscreen-ref.png
+        surface: "#EFF3F9",
+        "info-surface": "#EEF5FF",
+        "danger-surface": "#FFF2F2",
+        "danger-ink": "#E5343B",
       },
       // Each Inter weight is a separate family in React Native.
       fontFamily: {
