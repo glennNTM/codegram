@@ -130,7 +130,7 @@ codegram/
       post/[postId].tsx
       post/[postId]/comments.tsx   # formSheet
       (tabs)/_layout.tsx        # NativeTabs: home, messages, explore, profile
-      (tabs)/home/_layout.tsx  index.tsx  activity.tsx
+      (tabs)/(home)/_layout.tsx  index.tsx  activity.tsx   # group keeps Home at "/"
       (tabs)/messages/_layout.tsx  index.tsx  [conversationId].tsx
       (tabs)/explore/_layout.tsx  index.tsx
       (tabs)/profile/_layout.tsx  index.tsx  edit.tsx  settings.tsx  blocked.tsx
@@ -191,7 +191,7 @@ the tab bar. This is a deliberate simplification for v1.
   sign out returns to sign-in. Tests: username uniqueness, case-insensitivity, validation.
 
 ### Phase 4: Tab shell (NativeTabs)
-1. `(tabs)/_layout.tsx`: `import { NativeTabs } from "expo-router/native-tabs"` with 4 `NativeTabs.Trigger`s:
+1. `(tabs)/_layout.tsx`: `import { NativeTabs } from "expo-router/unstable-native-tabs"` (SDK 57 path) with 4 `NativeTabs.Trigger`s:
    home (`house` / `house.fill`), messages (`bubble.left.and.bubble.right` / `.fill`), explore (`magnifyingglass`),
    profile (`person.crop.circle` / `.fill`). The Messages badge shows the unread conversation count (wired up in Phase 10).
    `minimizeBehavior="onScrollDown"` (iOS 26). Check the Trigger child API (`Icon` / `Label` / `Badge`) against the installed version.
@@ -234,7 +234,7 @@ the tab bar. This is a deliberate simplification for v1.
 2. `feed.ts`: `fanOut(postId)` inserts a feedItem for the author and each follower, in batches of 200 with self-rescheduling.
    `home` is a paginated query on `by_owner_time`; it joins post, author and `viewerHasLiked` and filters out blocked authors.
    `suggested` returns posts with `isDemo` (index `by_demo`), newest first, with author info.
-3. `home/index.tsx`: `usePaginatedQuery(home)`. If the viewer's `followingCount === 0`, render a "Suggested for you" header plus
+3. `(home)/index.tsx`: `usePaginatedQuery(home)`. If the viewer's `followingCount === 0`, render a "Suggested for you" header plus
    the demo posts, each with a FollowButton. Pull to refresh (no-op re-render), infinite scroll, skeletons on first load.
 4. `FollowButton` with an optimistic update (`withOptimisticUpdate`).
 - ✅ Check: a new user sees demo posts; following a demo account switches Home to the real feed and shows their posts; unfollowing
@@ -248,7 +248,7 @@ the tab bar. This is a deliberate simplification for v1.
 3. `post/[postId]/comments.tsx` as a `formSheet`: list, composer pinned to the bottom (keyboard-aware), swipe or long-press to
    delete for allowed users.
 4. `notifications.ts`: `list` (paginated, joins actor and post thumbnail), `unreadCount`, `markAllRead` (called when the
-   Activity screen is opened). `home/activity.tsx` shows the list. The Home header heart shows a dot when `unreadCount > 0`.
+   Activity screen is opened). `(home)/activity.tsx` shows the list. The Home header heart shows a dot when `unreadCount > 0`.
 - ✅ Check: two simulator accounts like and comment on each other's posts; Activity updates live; delete rules hold.
   Tests: comment deletion permissions, like idempotency, notification creation and removal.
 

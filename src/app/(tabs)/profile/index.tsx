@@ -1,21 +1,19 @@
 import { useClerk, useUser } from "@clerk/expo";
 import { Image } from "expo-image";
-import { Pressable, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Pressable, ScrollView, Text, View } from "react-native";
 
-// Temporary signed-in screen; replaced by the NativeTabs shell in Phase 4.
-export default function Home() {
+// Profile header + posts grid land in Phase 5; settings (blocked users, delete account) in Phase 11.
+export default function ProfileScreen() {
   const { user } = useUser();
   const { signOut } = useClerk();
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <View className="flex-1 items-center justify-center gap-4 px-8">
+    <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerClassName="grow">
+      <View className="items-center gap-3 px-8 py-10">
         {user?.imageUrl ? (
-          <Image source={user.imageUrl} style={{ width: 72, height: 72, borderRadius: 36 }} />
+          <Image source={user.imageUrl} style={{ width: 88, height: 88, borderRadius: 44 }} />
         ) : null}
-        <Text className="font-inter-bold text-[22px] text-ink">You&apos;re signed in</Text>
-        <Text className="text-center font-inter text-[14px] text-muted">
+        <Text className="font-inter-semibold text-[18px] text-ink">
           {user?.fullName || user?.primaryEmailAddress?.emailAddress}
         </Text>
         <Pressable
@@ -26,6 +24,6 @@ export default function Home() {
           <Text className="font-inter-medium text-[14px] text-ink">Sign out</Text>
         </Pressable>
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 }
