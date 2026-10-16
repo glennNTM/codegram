@@ -41,3 +41,6 @@ example
 # generated native folders
 /ios
 /android
+
+# Clerk CLI writes CLERK_SECRET_KEY here; never commit it
+.env
